@@ -9,11 +9,25 @@ import joblib
 import pandas as pd
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 api = Api(app)
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 db = psycopg2.connect(DATABASE_URL)
+
+def init_db():
+    cursor = db.cursor()
+    with open('schema.sql', 'r') as f:
+        sql_commands = f.read()
+    commands = sql_commands.split(';') 
+    for command in commands:
+        command = command.strip()
+        if command:
+            cursor.execute(command)
+    db.commit()
+    cursor.close()
+
+init_db()  
 
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -80,7 +94,7 @@ class AddCat(Resource):
                     adoption_chance
                 )
             )
-            cat_id = cursor.lastrowid
+            cat_id = cursor.fetchone()[0]
             for filename in filenames:
                 cursor.execute(
                     "INSERT INTO cat_images (cat_id, image_filename) VALUES (%s, %s)",
