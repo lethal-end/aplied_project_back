@@ -122,6 +122,11 @@ class DeleteCat(Resource):
         cursor.close()
         return jsonify({"message": "Cat deleted successfully"}), 200
 
+@app.route('/')
+def index():
+    return "Welcome to the Cat Adoption API!"
+
+
 @app.route('/static/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
