@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request, send_from_directory
 from flask_restful import Api, Resource
 from flask_cors import CORS
+from flask_cors import cross_origin
 from werkzeug.utils import secure_filename
 import os
 import psycopg2
@@ -156,6 +157,7 @@ def index():
 
 
 @app.route('/static/uploads/<filename>')
+@cross_origin()
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
